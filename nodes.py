@@ -20,6 +20,7 @@ class Noise_GoldenNoise:
         self.model = model
         self.noise = noise
         self.cond = cond
+        self.seed = self.noise.seed
 
     def generate_noise(self, input_latent):
         og_shape = input_latent["samples"].shape
