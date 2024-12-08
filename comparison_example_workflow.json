@@ -452,7 +452,7 @@
       },
       "widgets_values": [
         "SDXL",
-        "sdxl.pth",
+        "sdxl.safetensors",
         "cuda"
       ]
     },
