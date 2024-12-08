@@ -1,6 +1,7 @@
 import torch
 import os
 from diffusers.models.normalization import AdaGroupNorm
+import safetensors.torch
 
 import folder_paths
 
@@ -32,28 +33,29 @@ class Noise_GoldenNoise:
             
         initial_noise = self.noise.generate_noise(input_latent).to(self.model["device"])
         cond = self.cond[0].clone().to(self.model["device"])
-        cond = cond[:, :77, :]
         
         try:
-            cond = cond.float().view(cond.shape[0], -1)
-            text_emb = self.model["text_embedding"](initial_noise.float(), cond)
+            for _, cond in enumerate(torch.split(cond, 77, 1)):
+                cond = cond.float().view(cond.shape[0], -1)
+                text_emb = self.model["text_embedding"](initial_noise.float(), cond)
 
-            encoder_hidden_states_svd = initial_noise
-            encoder_hidden_states_embedding = initial_noise + text_emb
+                encoder_hidden_states_svd = initial_noise
+                encoder_hidden_states_embedding = initial_noise + text_emb
 
-            golden_embedding = self.model["unet_embedding"](encoder_hidden_states_embedding.float())
+                golden_embedding = self.model["unet_embedding"](encoder_hidden_states_embedding.float())
 
-            golden_noise = (
-                self.model["unet_svd"](encoder_hidden_states_svd.float())
-                + (2 * torch.sigmoid(self.model["_alpha"]) - 1) * text_emb
-                + self.model["_beta"] * golden_embedding
-            )
+                initial_noise = (
+                    self.model["unet_svd"](encoder_hidden_states_svd.float())
+                    + (2 * torch.sigmoid(self.model["_alpha"]) - 1) * text_emb
+                    + self.model["_beta"] * golden_embedding
+                )
             
+            golden_noise = initial_noise
             golden_noise.to("cpu")
             
             if rescale:
                 golden_noise = common_upscale(golden_noise, og_shape[-1], og_shape[-2], "nearest-exact", "disabled")
-                
+                    
         except Exception as e:
             print("Noise could not be turned golden:", e)
             return initial_noise
@@ -93,10 +95,16 @@ class GoldenNoise:
             else:
                   text_embedding = AdaGroupNorm(2048 * 77, 4, 1, eps=1e-6).to(device, torch.float32)
 
-            gloden_unet = torch.load(npnet_model_path, weights_only=True, map_location=device)
-            unet_svd.load_state_dict(gloden_unet["unet_svd"])
-            unet_embedding.load_state_dict(gloden_unet["unet_embedding"])
-            text_embedding.load_state_dict(gloden_unet["embeeding"])
+            is_pth = ".pth" in npnet_model_path
+            
+            if is_pth:
+                gloden_unet = torch.load(npnet_model_path, weights_only=True, map_location=device)
+            else:
+                gloden_unet = safetensors.torch.load_file(npnet_model_path, device=device)
+
+            unet_svd.load_state_dict(gloden_unet["unet_svd"] if is_pth else {k.replace("unet_svd.", ""): v for k, v in gloden_unet.items() if k.startswith("unet_svd.")})
+            unet_embedding.load_state_dict(gloden_unet["unet_embedding"] if is_pth else {k.replace("unet_embedding.", ""): v for k, v in gloden_unet.items() if k.startswith("unet_embedding.")})
+            text_embedding.load_state_dict(gloden_unet["embeeding"] if is_pth else {k.replace("embeeding.", ""): v for k, v in gloden_unet.items() if k.startswith("embeeding.")})
             _alpha = gloden_unet["alpha"]
             _beta = gloden_unet["beta"]
 
