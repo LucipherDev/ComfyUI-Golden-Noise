@@ -19,13 +19,15 @@ cd ComfyUI-Golden-Noise
 pip install -r requirements.txt
 ```
 
+### Or Install using ComfyUI Manager
+
 ## Usage
 
-Download the pre-trained NPNet weights of Stable Diffusion XL, DreamShaper-xl-v2-turbo, and Hunyuan-DiT from [here](https://drive.google.com/drive/folders/1Z0wg4HADhpgrztyT3eWijPbJJN5Y2jQt) and put them in the **models/npnets** folder.
+Download Safetensors of the pre-trained NPNet weights of Stable Diffusion XL, DreamShaper-xl-v2-turbo, and Hunyuan-DiT from Huggingface [LucipherDev/Golden-Noise-NPNets](https://huggingface.co/LucipherDev/Golden-Noise-NPNets) and put them in the **models/npnets** folder.
 
 The node can be found in "sampling/custom_sampling/noise" category as "GoldenNoise".
 
-Look at example workflow for more info.
+Look at the example workflow for more info.
 
 ### Inputs
 
@@ -36,15 +38,16 @@ Look at example workflow for more info.
 - **device**: "cuda", "cpu"
 
 ## Citation
-Original Paper
+Original Paper.
 
-```bibtex
+```
 @misc{zhou2024goldennoisediffusionmodels,
       title={Golden Noise for Diffusion Models: A Learning Framework}, 
       author={Zikai Zhou and Shitong Shao and Lichen Bai and Zhiqiang Xu and Bo Han and Zeke Xie},
       year={2024},
       eprint={2411.09502},
       archivePrefix={arXiv},
-      primaryClass={cs.LG}
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2411.09502}, 
 }
 ```
