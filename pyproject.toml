@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-golden-noise"
+description = "ComfyUI Custom Node for 'Golden-Noise-for-Diffusion-Models'. This node refines the initial latent noise in the diffusion process, enhancing both image quality and semantic coherence."
+version = "1.0.0"
+license = {file = "LICENSE"}
+dependencies = ["timm", "einops"]
+
+[project.urls]
+Repository = "https://github.com/LucipherDev/ComfyUI-Golden-Noise"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "lucipherdev"
+DisplayName = "ComfyUI-Golden-Noise"
+Icon = "https://raw.githubusercontent.com/LucipherDev/ComfyUI-Golden-Noise/refs/heads/main/icon.png"
