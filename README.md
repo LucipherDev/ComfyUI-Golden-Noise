@@ -49,9 +49,8 @@ Another comparison. This is taken from the original paper.
 **Comparisons from the original paper*
 
 ## Citation
-Original Paper.
 
-```
+```bibtex
 @misc{zhou2024goldennoisediffusionmodels,
       title={Golden Noise for Diffusion Models: A Learning Framework}, 
       author={Zikai Zhou and Shitong Shao and Lichen Bai and Zhiqiang Xu and Bo Han and Zeke Xie},
